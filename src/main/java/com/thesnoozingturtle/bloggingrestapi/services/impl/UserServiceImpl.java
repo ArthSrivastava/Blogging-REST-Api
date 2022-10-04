@@ -5,9 +5,11 @@ import com.thesnoozingturtle.bloggingrestapi.exceptions.ResourceNotFoundExceptio
 import com.thesnoozingturtle.bloggingrestapi.payloads.UserDto;
 import com.thesnoozingturtle.bloggingrestapi.repositories.UserRepo;
 import com.thesnoozingturtle.bloggingrestapi.services.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserRepo userRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public UserDto createUser(UserDto userDto) {
@@ -61,21 +66,16 @@ public class UserServiceImpl implements UserService {
     }
 
     private User userDtoToUser(UserDto userDto) {
-        User user = new User();
-        user.setId(userDto.getId());
-        user.setAbout(userDto.getAbout());
-        user.setEmail(userDto.getEmail());
-        user.setName(userDto.getName());
-        user.setPassword(userDto.getPassword());
+        User user = this.modelMapper.map(userDto, User.class);
+//        user.setId(userDto.getId());
+//        user.setAbout(userDto.getAbout());
+//        user.setEmail(userDto.getEmail());
+//        user.setName(userDto.getName());
+//        user.setPassword(userDto.getPassword());
         return user;
     }
     private UserDto userToUserDto(User user) {
-        UserDto userDto = new UserDto();
-        userDto.setId(user.getId());
-        userDto.setName(user.getName());
-        userDto.setAbout(user.getAbout());
-        userDto.setEmail(user.getEmail());
-        userDto.setPassword(user.getPassword());
+        UserDto userDto = this.modelMapper.map(user, UserDto.class);
         return userDto;
     }
 }
