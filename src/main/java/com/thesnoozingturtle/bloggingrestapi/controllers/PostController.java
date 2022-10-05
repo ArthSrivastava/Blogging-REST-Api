@@ -2,6 +2,7 @@ package com.thesnoozingturtle.bloggingrestapi.controllers;
 
 import com.thesnoozingturtle.bloggingrestapi.payloads.ApiResponse;
 import com.thesnoozingturtle.bloggingrestapi.payloads.PostDto;
+import com.thesnoozingturtle.bloggingrestapi.payloads.PostResponse;
 import com.thesnoozingturtle.bloggingrestapi.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,22 +28,27 @@ public class PostController {
 
     //get post by category
     @GetMapping("/category/{categoryId}/posts")
-    public ResponseEntity<List<PostDto>> getPostByCategory(@PathVariable int categoryId) {
-        List<PostDto> posts = this.postService.getPostsByCategory(categoryId);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+    public ResponseEntity<PostResponse> getPostByCategory(@PathVariable int categoryId,
+                                                           @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+                                                           @RequestParam(value = "pageSize", defaultValue = "3", required = false) int pageSize) {
+        PostResponse postResponse = this.postService.getPostsByCategory(categoryId, pageNumber, pageSize);
+        return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 
     //get post by user
     @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<PostDto>> getPostByUser(@PathVariable int userId) {
-        List<PostDto> posts = this.postService.getPostsByUser(userId);
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+    public ResponseEntity<PostResponse> getPostByUser(@PathVariable int userId,
+                                                       @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+                                                       @RequestParam(value = "pageSize", defaultValue = "3", required = false) int pageSize) {
+        PostResponse postResponse = this.postService.getPostsByUser(userId, pageNumber, pageSize);
+        return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 
     //get all posts
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPosts() {
-        List<PostDto> allPosts = this.postService.getAllPosts();
+    public ResponseEntity<PostResponse> getAllPosts(@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
+                                                    @RequestParam(value = "pageSize", defaultValue = "3", required = false) int pageSize) {
+        PostResponse allPosts = this.postService.getAllPosts(pageNumber, pageSize);
         return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }
 
