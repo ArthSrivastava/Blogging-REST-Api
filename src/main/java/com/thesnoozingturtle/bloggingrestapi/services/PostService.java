@@ -2,6 +2,7 @@ package com.thesnoozingturtle.bloggingrestapi.services;
 
 import com.thesnoozingturtle.bloggingrestapi.entities.Post;
 import com.thesnoozingturtle.bloggingrestapi.payloads.PostDto;
+import com.thesnoozingturtle.bloggingrestapi.payloads.PostResponse;
 
 import java.util.List;
 
@@ -20,13 +21,13 @@ public interface PostService {
     PostDto getPostById(int postId);
 
     //get all posts
-    List<PostDto> getAllPosts();
+    PostResponse getAllPosts(int pageNumber, int pageSize);
 
     //get all posts by category
-    List<PostDto> getPostsByCategory(int categoryId);
+    PostResponse getPostsByCategory(int categoryId, int pageNumber, int pageSize);
 
     //get all posts by user
-    List<PostDto> getPostsByUser(int userId);
+    PostResponse getPostsByUser(int userId, int pageNumber, int pageSize);
 
     //search posts
     List<PostDto> searchPosts(String keyword);
