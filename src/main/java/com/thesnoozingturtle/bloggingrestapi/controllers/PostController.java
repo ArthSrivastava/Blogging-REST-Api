@@ -1,5 +1,6 @@
 package com.thesnoozingturtle.bloggingrestapi.controllers;
 
+import com.thesnoozingturtle.bloggingrestapi.config.AppConstants;
 import com.thesnoozingturtle.bloggingrestapi.payloads.ApiResponse;
 import com.thesnoozingturtle.bloggingrestapi.payloads.PostDto;
 import com.thesnoozingturtle.bloggingrestapi.payloads.PostResponse;
@@ -29,8 +30,8 @@ public class PostController {
     //get post by category
     @GetMapping("/category/{categoryId}/posts")
     public ResponseEntity<PostResponse> getPostByCategory(@PathVariable int categoryId,
-                                                           @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-                                                           @RequestParam(value = "pageSize", defaultValue = "3", required = false) int pageSize) {
+                                                          @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
+                                                          @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize) {
         PostResponse postResponse = this.postService.getPostsByCategory(categoryId, pageNumber, pageSize);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
@@ -38,17 +39,19 @@ public class PostController {
     //get post by user
     @GetMapping("/user/{userId}/posts")
     public ResponseEntity<PostResponse> getPostByUser(@PathVariable int userId,
-                                                       @RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-                                                       @RequestParam(value = "pageSize", defaultValue = "3", required = false) int pageSize) {
+                                                      @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
+                                                      @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize) {
         PostResponse postResponse = this.postService.getPostsByUser(userId, pageNumber, pageSize);
         return new ResponseEntity<>(postResponse, HttpStatus.OK);
     }
 
     //get all posts
     @GetMapping("/posts")
-    public ResponseEntity<PostResponse> getAllPosts(@RequestParam(value = "pageNumber", defaultValue = "0", required = false) int pageNumber,
-                                                    @RequestParam(value = "pageSize", defaultValue = "3", required = false) int pageSize) {
-        PostResponse allPosts = this.postService.getAllPosts(pageNumber, pageSize);
+    public ResponseEntity<PostResponse> getAllPosts(@RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
+                                                    @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize,
+                                                    @RequestParam(value = "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+                                                    @RequestParam(value = "sortOrder", defaultValue = AppConstants.SORT_ORDER, required = false) String sortOrder) {
+        PostResponse allPosts = this.postService.getAllPosts(pageNumber, pageSize, sortBy, sortOrder);
         return new ResponseEntity<>(allPosts, HttpStatus.OK);
     }
 
@@ -71,5 +74,14 @@ public class PostController {
     public ResponseEntity<PostDto> deletePost(@RequestBody PostDto postDto, @PathVariable int postId) {
         PostDto updatedPost = this.postService.updatePost(postDto, postId);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+    }
+
+    //search by title
+    @GetMapping("/posts/search/{keyword}")
+    public ResponseEntity<List<PostDto>> searchByTitle(@RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
+                                                       @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize,
+                                                       @PathVariable String keyword) {
+        List<PostDto> postDtos = this.postService.searchPosts(keyword, pageNumber, pageSize);
+        return new ResponseEntity<>(postDtos, HttpStatus.OK);
     }
 }
