@@ -3,6 +3,7 @@ package com.thesnoozingturtle.bloggingrestapi.services;
 import com.thesnoozingturtle.bloggingrestapi.entities.Post;
 import com.thesnoozingturtle.bloggingrestapi.payloads.PostDto;
 import com.thesnoozingturtle.bloggingrestapi.payloads.PostResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public interface PostService {
     PostDto getPostById(int postId);
 
     //get all posts
-    PostResponse getAllPosts(int pageNumber, int pageSize);
+    PostResponse getAllPosts(int pageNumber, int pageSize, String sortBy, String sortOrder);
 
     //get all posts by category
     PostResponse getPostsByCategory(int categoryId, int pageNumber, int pageSize);
@@ -30,5 +31,5 @@ public interface PostService {
     PostResponse getPostsByUser(int userId, int pageNumber, int pageSize);
 
     //search posts
-    List<PostDto> searchPosts(String keyword);
+    List<PostDto> searchPosts(String keyword, int pageNumber, int pageSize);
 }
