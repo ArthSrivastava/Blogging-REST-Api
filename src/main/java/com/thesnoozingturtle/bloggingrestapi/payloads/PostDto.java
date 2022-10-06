@@ -1,12 +1,15 @@
 package com.thesnoozingturtle.bloggingrestapi.payloads;
 
 import com.thesnoozingturtle.bloggingrestapi.entities.Category;
+import com.thesnoozingturtle.bloggingrestapi.entities.Comment;
 import com.thesnoozingturtle.bloggingrestapi.entities.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @NoArgsConstructor
 @Getter
@@ -19,4 +22,5 @@ public class PostDto {
     private String imageName;
     private CategoryDto category;
     private UserDto user;
+    private Set<CommentDto> comments = new HashSet<>();
 }
