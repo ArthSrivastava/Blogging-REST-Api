@@ -1,5 +1,6 @@
 package com.thesnoozingturtle.bloggingrestapi.payloads;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.thesnoozingturtle.bloggingrestapi.entities.Comment;
 import lombok.Builder;
 import lombok.Getter;
