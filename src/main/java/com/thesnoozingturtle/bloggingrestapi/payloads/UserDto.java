@@ -1,6 +1,8 @@
 package com.thesnoozingturtle.bloggingrestapi.payloads;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.thesnoozingturtle.bloggingrestapi.entities.Comment;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,10 +33,14 @@ public class UserDto {
 
     @NotEmpty(message = "Password cannot be empty")
     @Size(min = 3, max = 10, message = "Password length must be between 3 to 10 characters")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @NotEmpty(message = "About cannot be empty")
     private String about;
 
+    @JsonIgnore
     private Set<CommentDto> comments = new HashSet<>();
+
+    private Set<RoleDto> roles = new HashSet<>();
 }
