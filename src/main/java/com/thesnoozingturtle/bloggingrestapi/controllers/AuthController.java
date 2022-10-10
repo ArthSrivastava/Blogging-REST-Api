@@ -1,8 +1,11 @@
 package com.thesnoozingturtle.bloggingrestapi.controllers;
 
+import com.thesnoozingturtle.bloggingrestapi.exceptions.ApiException;
 import com.thesnoozingturtle.bloggingrestapi.payloads.JwtAuthRequest;
 import com.thesnoozingturtle.bloggingrestapi.payloads.JwtAuthResponse;
+import com.thesnoozingturtle.bloggingrestapi.payloads.UserDto;
 import com.thesnoozingturtle.bloggingrestapi.security.JwtTokenHelper;
+import com.thesnoozingturtle.bloggingrestapi.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +30,15 @@ public class AuthController {
     private UserDetailsService userDetailsService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> createToken(
             @RequestBody JwtAuthRequest request
-            ) throws Exception {
+    ) throws Exception {
         this.authenticate(request.getUsername(), request.getPassword());
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(request.getUsername());
         String token = this.jwtTokenHelper.generateToken(userDetails);
@@ -41,13 +47,19 @@ public class AuthController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private void authenticate(String username, String password) throws Exception {
+    private void authenticate(String username, String password) throws ApiException {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         try {
             this.authenticationManager.authenticate(usernamePasswordAuthenticationToken);
         } catch (BadCredentialsException e) {
             System.out.println("Invalid username or password");
-            throw new Exception("Invalid username or password");
+            throw new ApiException("Invalid username or password");
         }
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<UserDto> registerUser(@RequestBody UserDto userDto) {
+        UserDto userDto1 = this.userService.registerNewUser(userDto);
+        return new ResponseEntity<>(userDto1, HttpStatus.CREATED);
     }
 }

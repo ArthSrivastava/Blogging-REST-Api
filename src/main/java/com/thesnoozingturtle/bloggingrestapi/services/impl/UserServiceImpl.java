@@ -1,15 +1,19 @@
 package com.thesnoozingturtle.bloggingrestapi.services.impl;
 
+import com.thesnoozingturtle.bloggingrestapi.config.AppConstants;
+import com.thesnoozingturtle.bloggingrestapi.entities.Role;
 import com.thesnoozingturtle.bloggingrestapi.entities.User;
 import com.thesnoozingturtle.bloggingrestapi.exceptions.ResourceNotFoundException;
+import com.thesnoozingturtle.bloggingrestapi.payloads.RoleDto;
 import com.thesnoozingturtle.bloggingrestapi.payloads.UserDto;
+import com.thesnoozingturtle.bloggingrestapi.repositories.RoleRepo;
 import com.thesnoozingturtle.bloggingrestapi.repositories.UserRepo;
 import com.thesnoozingturtle.bloggingrestapi.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +25,22 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepo roleRepo;
+
+    @Override
+    public UserDto registerNewUser(UserDto userDto) {
+        User user = this.modelMapper.map(userDto, User.class);
+        user.setPassword(this.passwordEncoder.encode(user.getPassword()));
+        Role role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
+        user.getRoles().add(role);
+        User registeredUser = this.userRepo.save(user);
+        return this.modelMapper.map(registeredUser, UserDto.class);
+    }
 
     @Override
     public UserDto createUser(UserDto userDto) {
