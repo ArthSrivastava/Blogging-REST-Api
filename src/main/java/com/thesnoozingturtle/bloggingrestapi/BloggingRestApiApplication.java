@@ -33,11 +33,11 @@ public class BloggingRestApiApplication implements CommandLineRunner {
 //        System.out.println(this.passwordEncoder.encode("abc"));
         Role admin = new Role();
         admin.setId(AppConstants.ADMIN_USER);
-        admin.setName("ADMIN_USER");
+        admin.setName("ROLE_ADMIN");
 
         Role normal = new Role();
         normal.setId(AppConstants.NORMAL_USER);
-        normal.setName("NORMAL_USER");
+        normal.setName("ROLE_NORMAL");
         this.roleRepo.save(admin);
         this.roleRepo.save(normal);
     }
