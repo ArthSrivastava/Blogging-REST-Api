@@ -3,6 +3,7 @@ package com.thesnoozingturtle.bloggingrestapi.security;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,10 +29,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     //it executes when api request are hit
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         //get the token
         String requestToken = request.getHeader("Authorization");
-        System.out.println(requestToken);
         String userName = null;
         String token = null;
         if (requestToken != null && requestToken.startsWith("Bearer")) {
@@ -39,14 +39,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 userName = this.jwtTokenHelper.getUsernameFromToken(token);
             } catch (IllegalArgumentException e) {
-                System.out.println("Unable to get JWT token");
+                throw new IllegalArgumentException("Unable to get JWT token");
             } catch (ExpiredJwtException e) {
-                System.out.println("JWT token has expired");
+                throw new AccessDeniedException("JWT token has expired");
             } catch (MalformedJwtException e) {
-                System.out.println("Invalid jwt");
+                throw new MalformedJwtException("Invalid jwt");
             }
-        } else {
-            System.out.println("JWT token does not begin with bearer!");
         }
 
         //now validate
@@ -59,8 +57,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
             }
-        } else {
-            System.out.println("Username is null or context is not null!");
         }
         filterChain.doFilter(request, response);
     }
