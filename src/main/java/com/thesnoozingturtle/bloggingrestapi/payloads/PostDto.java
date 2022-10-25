@@ -1,8 +1,5 @@
 package com.thesnoozingturtle.bloggingrestapi.payloads;
 
-import com.thesnoozingturtle.bloggingrestapi.entities.Category;
-import com.thesnoozingturtle.bloggingrestapi.entities.Comment;
-import com.thesnoozingturtle.bloggingrestapi.entities.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
