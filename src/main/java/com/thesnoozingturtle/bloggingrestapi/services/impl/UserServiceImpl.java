@@ -4,7 +4,6 @@ import com.thesnoozingturtle.bloggingrestapi.config.AppConstants;
 import com.thesnoozingturtle.bloggingrestapi.entities.Role;
 import com.thesnoozingturtle.bloggingrestapi.entities.User;
 import com.thesnoozingturtle.bloggingrestapi.exceptions.ResourceNotFoundException;
-import com.thesnoozingturtle.bloggingrestapi.payloads.RoleDto;
 import com.thesnoozingturtle.bloggingrestapi.payloads.UserDto;
 import com.thesnoozingturtle.bloggingrestapi.repositories.RoleRepo;
 import com.thesnoozingturtle.bloggingrestapi.repositories.UserRepo;
