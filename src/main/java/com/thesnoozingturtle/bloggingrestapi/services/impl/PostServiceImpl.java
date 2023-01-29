@@ -9,6 +9,7 @@ import com.thesnoozingturtle.bloggingrestapi.payloads.PostResponse;
 import com.thesnoozingturtle.bloggingrestapi.repositories.CategoryRepo;
 import com.thesnoozingturtle.bloggingrestapi.repositories.PostRepo;
 import com.thesnoozingturtle.bloggingrestapi.repositories.UserRepo;
+import com.thesnoozingturtle.bloggingrestapi.security.JwtTokenHelper;
 import com.thesnoozingturtle.bloggingrestapi.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -36,19 +38,28 @@ public class PostServiceImpl implements PostService {
     @Autowired
     private ModelMapper modelMapper;
 
-    @Override
-    public PostDto createPost(PostDto postDto, int userId, int categoryId) {
-        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "user id", userId));
-        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
-        Post post = this.modelMapper.map(postDto, Post.class);
-        post.setImageName("default.png");
-        post.setAddedDate(new Date());
-        post.setUser(user);
-        post.setCategory(category);
-        Post newPost = this.postRepo.save(post);
-        return this.modelMapper.map(newPost, PostDto.class);
-    }
+    @Autowired
+    private JwtTokenHelper jwtTokenHelper;
 
+    @Override
+    public PostDto createPost(PostDto postDto, int userId, int categoryId, String token) {
+        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "user id", userId));
+        String email = jwtTokenHelper.getUsernameFromToken(token.substring(7));
+        System.out.println("\n\n\n\n" + user.getEmail() + " " + email + "\n\n\n");
+
+        //Checking for correct user
+        if (user.getEmail().equals(email)) {
+            Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
+            Post post = this.modelMapper.map(postDto, Post.class);
+            post.setImageName("default.png");
+            post.setAddedDate(new Date());
+            post.setUser(user);
+            post.setCategory(category);
+            Post newPost = this.postRepo.save(post);
+            return this.modelMapper.map(newPost, PostDto.class);
+        }
+        return null;
+    }
     @Override
     public PostDto updatePost(PostDto postDto, int postId) {
         Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));

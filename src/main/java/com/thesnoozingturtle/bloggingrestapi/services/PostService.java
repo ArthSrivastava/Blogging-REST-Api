@@ -10,7 +10,7 @@ import java.util.List;
 public interface PostService {
 
     //create posts
-    PostDto createPost(PostDto postDto, int userId, int categoryId);
+    PostDto createPost(PostDto postDto, int userId, int categoryId, String token);
 
     //update
     PostDto updatePost(PostDto postDto, int postId);
