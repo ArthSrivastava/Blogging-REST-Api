@@ -10,6 +10,7 @@ import com.thesnoozingturtle.bloggingrestapi.repositories.UserRepo;
 import com.thesnoozingturtle.bloggingrestapi.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -83,6 +84,12 @@ public class UserServiceImpl implements UserService {
                 "Id", userId)));
         user.setRoles(null);
         this.userRepo.delete(user);
+    }
+
+    @Override
+    public UserDto getUserByUsername(String username) {
+        User user = userRepo.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User does not exist!", username));
+        return modelMapper.map(user, UserDto.class);
     }
 
     private User userDtoToUser(UserDto userDto) {
