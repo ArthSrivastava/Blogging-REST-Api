@@ -101,6 +101,7 @@ public class MySecurityConfig {
 
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", configuration);
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean(new CorsFilter(urlBasedCorsConfigurationSource));
+        filterRegistrationBean.setOrder(-110);
         return filterRegistrationBean;
     }
 
