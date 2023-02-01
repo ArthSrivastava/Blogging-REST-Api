@@ -100,7 +100,7 @@ public class PostController {
         return new ResponseEntity<>(postDtos, HttpStatus.OK);
     }
 
-    @PostMapping("/post/image/upload/{postId}")
+    @PostMapping("/posts/image/upload/{postId}")
     public ResponseEntity<PostDto> uploadPostImage(@RequestParam("image") MultipartFile image,
                                                    @PathVariable int postId) throws IOException {
         PostDto postDto = this.postService.getPostById(postId);
@@ -111,7 +111,7 @@ public class PostController {
     }
 
     //produces: specifies which type of MIME media this can produce to the client
-    @GetMapping(value = "/post/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE )
+    @GetMapping(value = "/posts/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE )
     public void downloadImage(@PathVariable String imageName, HttpServletResponse response) throws IOException {
         InputStream image = this.fileService.downloadImage(path, imageName);
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
