@@ -86,7 +86,7 @@ public class PostController {
 
     //update post
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> deletePost(@RequestBody PostDto postDto, @PathVariable int postId) {
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable int postId) {
         PostDto updatedPost = this.postService.updatePost(postDto, postId);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
