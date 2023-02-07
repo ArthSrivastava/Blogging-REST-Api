@@ -39,4 +39,7 @@ public class UserDto {
     private Set<CommentDto> comments = new HashSet<>();
 
     private Set<RoleDto> roles = new HashSet<>();
+
+    @JsonIgnore
+    private Set<PostDto> likedPosts = new HashSet<>();
 }

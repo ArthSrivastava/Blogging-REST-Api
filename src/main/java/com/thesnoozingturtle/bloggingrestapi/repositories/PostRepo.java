@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepo extends JpaRepository<Post, Integer> {
 
-    public Page<Post> findAllByUser(User user, Pageable pageable);
-    public Page<Post> findAllByCategory(Category category, Pageable pageable);
-    public Page<Post> findByTitleContaining(String keyword, Pageable pageable);
+     Page<Post> findAllByUser(User user, Pageable pageable);
+     Page<Post> findAllByCategory(Category category, Pageable pageable);
+     Page<Post> findByTitleContaining(String keyword, Pageable pageable);
 }

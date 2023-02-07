@@ -42,6 +42,13 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    @ManyToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @JoinTable(name = "likes",
+                joinColumns = @JoinColumn(name = "user", referencedColumnName = "id"),
+                inverseJoinColumns = @JoinColumn(name = "post", referencedColumnName = "postId")
+    )
+    private Set<Post> likedPosts = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();

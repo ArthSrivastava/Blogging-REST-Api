@@ -29,9 +29,14 @@ public class Post {
 
     private Date addedDate;
 
+    @ManyToMany(mappedBy = "likedPosts")
+    private Set<User> likedBy;
+
     @ManyToOne
+    @JoinColumn(referencedColumnName = "id", name = "user_id")
     private User user;
 
+    private long likesCount;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
