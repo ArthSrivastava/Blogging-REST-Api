@@ -1,9 +1,10 @@
 package com.thesnoozingturtle.bloggingrestapi.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.thesnoozingturtle.bloggingrestapi.payloads.ApiResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,12 +21,17 @@ import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+    private final UserDetailsService userDetailsService;
+    private final JwtTokenHelper jwtTokenHelper;
+
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    private UserDetailsService userDetailsService;
-
-    @Autowired
-    private JwtTokenHelper jwtTokenHelper;
+    public JwtAuthenticationFilter(UserDetailsService userDetailsService, JwtTokenHelper jwtTokenHelper, ObjectMapper objectMapper) {
+        this.userDetailsService = userDetailsService;
+        this.jwtTokenHelper = jwtTokenHelper;
+        this.objectMapper = objectMapper;
+    }
 
     //it executes when api request are hit
     @Override
@@ -34,16 +40,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestToken = request.getHeader("Authorization");
         String userName = null;
         String token = null;
-        if (requestToken != null && requestToken.startsWith("Bearer")) {
+        String message = "";
+        if (requestToken != null && requestToken.startsWith("Bearer") && requestToken.length() >= 7) {
             token = requestToken.substring(7);
             try {
                 userName = this.jwtTokenHelper.getUsernameFromToken(token);
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Unable to get JWT token");
+                message = "Unable to get JWT token";
+                handleJwtExceptions(response, message);
+                return;
             } catch (ExpiredJwtException e) {
-                throw new AccessDeniedException("JWT token has expired");
+                message = "JWT token has expired!";
+                handleJwtExceptions(response, message);
+                return;
             } catch (MalformedJwtException e) {
-                throw new MalformedJwtException("Invalid jwt");
+                message = "Invalid jwt";
+                handleJwtExceptions(response, message);
+                return;
             }
         }
 
@@ -59,5 +72,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private void handleJwtExceptions(HttpServletResponse response, String message) throws IOException {
+        ApiResponse apiResponse = new ApiResponse(message, false);
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write(objectMapper.writeValueAsString(apiResponse));
     }
 }

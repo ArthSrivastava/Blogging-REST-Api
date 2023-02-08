@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +36,7 @@ public class PostController {
 
     //create post
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
+    @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,
                                               @PathVariable int userId, @PathVariable int categoryId,
                                               @RequestHeader("Authorization") String token) {
@@ -53,6 +55,7 @@ public class PostController {
 
     //get post by user
     @GetMapping("/user/{userId}/posts")
+    @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
     public ResponseEntity<PostResponse> getPostByUser(@PathVariable int userId,
                                                       @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
                                                       @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize) {
@@ -78,16 +81,19 @@ public class PostController {
     }
 
     //delete post
-    @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<ApiResponse> deletePost(@PathVariable int postId) {
-        this.postService.deletePost(postId);
+    @DeleteMapping("/user/{userId}/posts/{postId}")
+    @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable int postId,
+                                                  @PathVariable int userId) {
+        this.postService.deletePost(postId, userId);
         return new ResponseEntity<>(new ApiResponse("Post deleted successfully!", true), HttpStatus.OK);
     }
 
     //update post
-    @PutMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable int postId) {
-        PostDto updatedPost = this.postService.updatePost(postDto, postId);
+    @PutMapping("/user/{userId}/posts/{postId}")
+    @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable int postId, @PathVariable int userId) {
+        PostDto updatedPost = this.postService.updatePost(postDto, postId, userId);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
 
@@ -100,13 +106,14 @@ public class PostController {
         return new ResponseEntity<>(postDtos, HttpStatus.OK);
     }
 
-    @PostMapping("/posts/image/upload/{postId}")
+    @PostMapping("/user/{userId}/posts/image/upload/{postId}")
+    @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
     public ResponseEntity<PostDto> uploadPostImage(@RequestParam("image") MultipartFile image,
-                                                   @PathVariable int postId) throws IOException {
+                                                   @PathVariable int postId, @PathVariable int userId) throws IOException {
         PostDto postDto = this.postService.getPostById(postId);
         String uploadImageName = this.fileService.uploadImage(path, image);
         postDto.setImageName(uploadImageName);
-        PostDto updatedPostDto = this.postService.updatePost(postDto, postId);
+        PostDto updatedPostDto = this.postService.updatePost(postDto, postId, userId);
         return new ResponseEntity<>(updatedPostDto, HttpStatus.OK);
     }
 

@@ -13,10 +13,10 @@ public interface PostService {
     PostDto createPost(PostDto postDto, int userId, int categoryId, String token);
 
     //update
-    PostDto updatePost(PostDto postDto, int postId);
+    PostDto updatePost(PostDto postDto, int postId, int userId);
 
     //delete
-    void deletePost(int postId);
+    void deletePost(int postId, int userId);
 
     //get post
     PostDto getPostById(int postId);

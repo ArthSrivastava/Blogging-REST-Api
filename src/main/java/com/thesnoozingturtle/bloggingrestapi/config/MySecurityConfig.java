@@ -3,6 +3,7 @@ package com.thesnoozingturtle.bloggingrestapi.config;
 import com.thesnoozingturtle.bloggingrestapi.security.CustomUserDetailService;
 import com.thesnoozingturtle.bloggingrestapi.security.JwtAuthenticationEntryPoint;
 import com.thesnoozingturtle.bloggingrestapi.security.JwtAuthenticationFilter;
+import com.thesnoozingturtle.bloggingrestapi.security.MyAccessDeniedHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -38,14 +39,25 @@ public class MySecurityConfig {
             "/swagger-ui/**",
             "/webjars/**"
     };
-    @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    @Autowired
-    private CustomUserDetailService customUserDetailService;
+    private final CustomUserDetailService customUserDetailService;
+
+    private final MyAccessDeniedHandler myAccessDeniedHandler;
+
+
+    public MySecurityConfig(JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
+            , JwtAuthenticationFilter jwtAuthenticationFilter
+            , CustomUserDetailService customUserDetailService
+            , MyAccessDeniedHandler myAccessDeniedHandler) {
+        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customUserDetailService = customUserDetailService;
+        this.myAccessDeniedHandler = myAccessDeniedHandler;
+    }
+
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -68,7 +80,8 @@ public class MySecurityConfig {
                 .anyRequest()
                 .authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .exceptionHandling().accessDeniedHandler(myAccessDeniedHandler)
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);

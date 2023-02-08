@@ -22,47 +22,44 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
 
-    @Autowired
-    private PostRepo postRepo;
+    private final PostRepo postRepo;
+    private final UserRepo userRepo;
+    private final CategoryRepo categoryRepo;
+    private final ModelMapper modelMapper;
+    private final JwtTokenHelper jwtTokenHelper;
 
     @Autowired
-    private UserRepo userRepo;
-
-    @Autowired
-    private CategoryRepo categoryRepo;
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private JwtTokenHelper jwtTokenHelper;
+    public PostServiceImpl(PostRepo postRepo, UserRepo userRepo, CategoryRepo categoryRepo, ModelMapper modelMapper, JwtTokenHelper jwtTokenHelper) {
+        this.postRepo = postRepo;
+        this.userRepo = userRepo;
+        this.categoryRepo = categoryRepo;
+        this.modelMapper = modelMapper;
+        this.jwtTokenHelper = jwtTokenHelper;
+    }
 
     @Override
     public PostDto createPost(PostDto postDto, int userId, int categoryId, String token) {
-        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "user id", userId));
+        User user = getUser(userId);
         String email = jwtTokenHelper.getUsernameFromToken(token.substring(7));
-        System.out.println("\n\n\n\n" + user.getEmail() + " " + email + "\n\n\n");
-
-        //Checking for correct user
-        if (user.getEmail().equals(email)) {
-            Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
-            Post post = this.modelMapper.map(postDto, Post.class);
-            post.setImageName("default.png");
-            post.setAddedDate(new Date());
-            post.setUser(user);
-            post.setCategory(category);
-            Post newPost = this.postRepo.save(post);
-            return this.modelMapper.map(newPost, PostDto.class);
-        }
-        return null;
+        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
+        Post post = this.modelMapper.map(postDto, Post.class);
+        post.setImageName("default.png");
+        post.setAddedDate(new Date());
+        post.setUser(user);
+        post.setCategory(category);
+        Post newPost = this.postRepo.save(post);
+        return this.modelMapper.map(newPost, PostDto.class);
     }
+
+
     @Override
-    public PostDto updatePost(PostDto postDto, int postId) {
-        Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
+    public PostDto updatePost(PostDto postDto, int postId, int userId) {
+        User user = getUser(userId);
+        Post post = this.postRepo.findByUserAndPostId(user, postId).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
         int categoryId = postDto.getCategory().getCategoryId();
         Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
         post.setTitle(postDto.getTitle());
@@ -74,8 +71,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deletePost(int postId) {
-        Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
+    public void deletePost(int postId, int userId) {
+        User user = getUser(userId);
+        Post post = this.postRepo.findByUserAndPostId(user, postId).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
         this.postRepo.delete(post);
     }
 
@@ -135,5 +133,9 @@ public class PostServiceImpl implements PostService {
         postResponse.setTotalPages(postPage.getTotalPages());
         postResponse.setLastPage(postPage.isLast());
         return postResponse;
+    }
+    private User getUser(int userId) {
+        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "user id", userId));
+        return user;
     }
 }
