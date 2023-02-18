@@ -5,6 +5,8 @@ target/
 !**/src/test/**/target/
 /images/
 /src/main/resources/application.properties
+.git.bfg-report
+bfg-1.14.0.jar
 ### STS ###
 .apt_generated
 .classpath
