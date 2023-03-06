@@ -21,7 +21,7 @@ public class LikeController {
 
 
     @PostMapping("/user/{userId}/post/{postId}/likes")
-    public ResponseEntity<ApiResponse> likePost(@PathVariable int userId, @PathVariable int postId) {
+    public ResponseEntity<ApiResponse> likePost(@PathVariable String userId, @PathVariable String postId) {
         likeService.updateLikeOnPost(userId, postId);
         ApiResponse apiResponse = new ApiResponse("Post like successfully updated by user with user id " + userId, true);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);

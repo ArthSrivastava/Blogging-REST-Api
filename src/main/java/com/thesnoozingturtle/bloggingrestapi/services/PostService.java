@@ -10,25 +10,25 @@ import java.util.List;
 public interface PostService {
 
     //create posts
-    PostDto createPost(PostDto postDto, int userId, int categoryId, String token);
+    PostDto createPost(PostDto postDto, String userId, String categoryId, String token);
 
     //update
-    PostDto updatePost(PostDto postDto, int postId, int userId);
+    PostDto updatePost(PostDto postDto, String postId, String userId);
 
     //delete
-    void deletePost(int postId, int userId);
+    void deletePost(String postId, String userId);
 
     //get post
-    PostDto getPostById(int postId);
+    PostDto getPostById(String postId);
 
     //get all posts
     PostResponse getAllPosts(int pageNumber, int pageSize, String sortBy, String sortOrder);
 
     //get all posts by category
-    PostResponse getPostsByCategory(int categoryId, int pageNumber, int pageSize);
+    PostResponse getPostsByCategory(String categoryId, int pageNumber, int pageSize);
 
     //get all posts by user
-    PostResponse getPostsByUser(int userId, int pageNumber, int pageSize);
+    PostResponse getPostsByUser(String userId, int pageNumber, int pageSize);
 
     //search posts
     List<PostDto> searchPosts(String keyword, int pageNumber, int pageSize);

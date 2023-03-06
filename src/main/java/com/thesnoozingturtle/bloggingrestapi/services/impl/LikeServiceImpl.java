@@ -12,6 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class LikeServiceImpl implements LikeService {
     private final UserRepo userRepo;
@@ -26,7 +28,7 @@ public class LikeServiceImpl implements LikeService {
     }
 
     @Override
-    public void updateLikeOnPost(int userId, int postId) {
+    public void updateLikeOnPost(String userId, String postId) {
         User user = getUser(userId);
         Post post = getPost(postId);
 
@@ -43,14 +45,14 @@ public class LikeServiceImpl implements LikeService {
         postRepo.save(post);
     }
 
-    private User getUser(int userId) {
-        User user = this.userRepo.findById(userId).orElseThrow((() -> new ResourceNotFoundException("User",
+    private User getUser(String userId) {
+        User user = this.userRepo.findById(UUID.fromString(userId)).orElseThrow((() -> new ResourceNotFoundException("User",
                 "Id", userId)));
         return user;
     }
 
-    private Post getPost(int postId) {
-        Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
+    private Post getPost(String postId) {
+        Post post = this.postRepo.findByPostId(UUID.fromString(postId)).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
         return post;
     }
 }

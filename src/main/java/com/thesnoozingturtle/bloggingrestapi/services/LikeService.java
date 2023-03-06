@@ -1,5 +1,5 @@
 package com.thesnoozingturtle.bloggingrestapi.services;
 
 public interface LikeService {
-    void updateLikeOnPost(int userId, int postId);
+    void updateLikeOnPost(String userId, String postId);
 }

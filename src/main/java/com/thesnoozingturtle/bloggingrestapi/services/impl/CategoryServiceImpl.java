@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class CategoryServiceImpl implements CategoryService {
@@ -29,23 +30,24 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public CategoryDto updateCategory(CategoryDto categoryDto, int categoryId) {
-        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
+    public CategoryDto updateCategory(CategoryDto categoryDto, String categoryId) {
+        Category category = getCategoryGeneral(categoryId);
         category.setCategoryTitle(categoryDto.getCategoryTitle());
         category.setCategoryDescription(categoryDto.getCategoryDescription());
         Category savedCategory = this.categoryRepo.save(category);
         return this.modelMapper.map(savedCategory, CategoryDto.class);
     }
 
+
     @Override
-    public void deleteCategory(int categoryId) {
-        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
+    public void deleteCategory(String categoryId) {
+        Category category = getCategoryGeneral(categoryId);
         this.categoryRepo.delete(category);
     }
 
     @Override
-    public CategoryDto getCategory(int categoryId) {
-        Category category = this.categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
+    public CategoryDto getCategory(String categoryId) {
+        Category category = getCategoryGeneral(categoryId);
         return this.modelMapper.map(category, CategoryDto.class);
     }
 
@@ -57,5 +59,9 @@ public class CategoryServiceImpl implements CategoryService {
             categoryDtos.add(this.modelMapper.map(category, CategoryDto.class));
         }
         return categoryDtos;
+    }
+    private Category getCategoryGeneral(String categoryId) {
+        Category category = this.categoryRepo.findByCategoryId(UUID.fromString(categoryId)).orElseThrow(() -> new ResourceNotFoundException("Category", "category id", categoryId));
+        return category;
     }
 }

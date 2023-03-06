@@ -11,6 +11,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
@@ -18,7 +19,7 @@ import java.util.Set;
 public class UserDto {
 
     //This is same as user entity, it is used so that the entity class is not directly exposed to the APIs
-    private int id;
+    private UUID id;
 
     @NotEmpty(message = "Name cannot be empty")
     @Size(min = 3, message = "Name should be minimum of 3 characters!")

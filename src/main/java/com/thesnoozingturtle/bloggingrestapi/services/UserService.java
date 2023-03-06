@@ -4,6 +4,7 @@ import com.thesnoozingturtle.bloggingrestapi.payloads.UserDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
 
@@ -11,13 +12,13 @@ public interface UserService {
 
     UserDto createUser(UserDto user);
 
-    UserDto updateUser(UserDto user, Integer userId);
+    UserDto updateUser(UserDto user, String userId);
 
-    UserDto getUserById(Integer userId);
+    UserDto getUserById(String userId);
 
     List<UserDto> getAllUsers();
 
-    void deleteUser(Integer userId);
+    void deleteUser(String userId);
 
     UserDto getUserByUsername(String username);
 }

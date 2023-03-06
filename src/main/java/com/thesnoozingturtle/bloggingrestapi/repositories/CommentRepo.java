@@ -3,5 +3,9 @@ package com.thesnoozingturtle.bloggingrestapi.repositories;
 import com.thesnoozingturtle.bloggingrestapi.entities.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CommentRepo extends JpaRepository<Comment, Integer> {
+import java.util.Optional;
+import java.util.UUID;
+
+public interface CommentRepo extends JpaRepository<Comment, UUID> {
+    Optional<Comment> findByCommentId(UUID commentId);
 }

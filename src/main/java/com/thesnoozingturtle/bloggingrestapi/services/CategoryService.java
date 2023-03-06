@@ -10,13 +10,13 @@ public interface CategoryService {
     public CategoryDto createCategory(CategoryDto categoryDto);
 
     //Update
-    public CategoryDto updateCategory(CategoryDto categoryDto, int categoryId);
+    public CategoryDto updateCategory(CategoryDto categoryDto, String categoryId);
 
     //Delete
-    public void deleteCategory(int categoryId);
+    public void deleteCategory(String categoryId);
 
     //Get
-    public CategoryDto getCategory(int categoryId);
+    public CategoryDto getCategory(String categoryId);
 
     //Get all
     public List<CategoryDto> getAllCategories();

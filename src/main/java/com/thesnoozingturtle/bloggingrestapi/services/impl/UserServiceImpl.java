@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
         Role role = this.roleRepo.findById(AppConstants.NORMAL_USER).get();
         user.getRoles().add(role);
         User registeredUser = this.userRepo.save(user);
-        return this.modelMapper.map(registeredUser, UserDto.class);
+        return userToUserDto(registeredUser);
     }
 
     @Override
@@ -50,9 +51,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, Integer userId) {
-        User storedUser = this.userRepo.findById(userId).orElseThrow((() -> new ResourceNotFoundException("User",
-                "Id", userId)));
+    public UserDto updateUser(UserDto userDto, String userId) {
+        User storedUser = getUser(userId);
         storedUser.setName(userDto.getName());
         storedUser.setPassword(userDto.getPassword());
         storedUser.setEmail(userDto.getEmail());
@@ -61,10 +61,10 @@ public class UserServiceImpl implements UserService {
         return this.userToUserDto(updatedUser);
     }
 
+
     @Override
-    public UserDto getUserById(Integer userId) {
-        User user = this.userRepo.findById(userId).orElseThrow((() -> new ResourceNotFoundException("User",
-                "Id", userId)));
+    public UserDto getUserById(String userId) {
+        User user = getUser(userId);
         return this.userToUserDto(user);
     }
 
@@ -79,17 +79,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(Integer userId) {
-        User user = this.userRepo.findById(userId).orElseThrow((() -> new ResourceNotFoundException("User",
-                "Id", userId)));
+    public void deleteUser(String userId) {
+        User user = getUser(userId);
         user.setRoles(null);
         this.userRepo.delete(user);
     }
 
     @Override
     public UserDto getUserByUsername(String username) {
-        User user = userRepo.findByEmail(username).orElseThrow(() -> new ResourceNotFoundException("User does not exist!", username));
-        return modelMapper.map(user, UserDto.class);
+        User user = userRepo
+                .findByEmail(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User does not exist!", username));
+        return userToUserDto(user);
     }
 
     private User userDtoToUser(UserDto userDto) {
@@ -104,5 +105,10 @@ public class UserServiceImpl implements UserService {
     private UserDto userToUserDto(User user) {
         UserDto userDto = this.modelMapper.map(user, UserDto.class);
         return userDto;
+    }
+    private User getUser(String userId) {
+        User storedUser = this.userRepo.findById(UUID.fromString(userId)).orElseThrow((() -> new ResourceNotFoundException("User",
+                "Id", userId)));
+        return storedUser;
     }
 }

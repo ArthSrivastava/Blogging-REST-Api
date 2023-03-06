@@ -9,12 +9,13 @@ import lombok.Setter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class PostDto {
-    private int postId;
+    private UUID postId;
     private String title;
     private String content;
     private Date addedDate;

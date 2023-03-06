@@ -13,6 +13,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 public class CommentServiceImpl implements CommentService {
 
@@ -27,9 +29,9 @@ public class CommentServiceImpl implements CommentService {
     private ModelMapper modelMapper;
 
     @Override
-    public CommentDto createComment(CommentDto commentDto, int postId, int userId) {
-        Post post = this.postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
-        User user = this.userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "user id", userId));
+    public CommentDto createComment(CommentDto commentDto, String postId, String userId) {
+        Post post = getPost(postId);
+        User user = getUser(userId);
 
         Comment comment = this.modelMapper.map(commentDto, Comment.class);
         comment.setPost(post);
@@ -38,10 +40,26 @@ public class CommentServiceImpl implements CommentService {
         return this.modelMapper.map(savedComment, CommentDto.class);
     }
 
+
     @Override
-    public void deleteComment(int commentId) {
-        Comment comment = this.commentRepo.findById(commentId).orElseThrow(() -> new ResourceNotFoundException("Comment", "comment id", commentId));
+    public void deleteComment(String commentId) {
+        Comment comment = getComment(commentId);
         this.commentRepo.delete(comment);
 
+    }
+
+    private Comment getComment(String commentId) {
+        Comment comment = this.commentRepo.findByCommentId(UUID.fromString(commentId)).orElseThrow(() -> new ResourceNotFoundException("Comment", "comment id", commentId));
+        return comment;
+    }
+
+    private User getUser(String userId) {
+        User user = this.userRepo.findById(UUID.fromString(userId)).orElseThrow(() -> new ResourceNotFoundException("User", "user id", userId));
+        return user;
+    }
+
+    private Post getPost(String postId) {
+        Post post = this.postRepo.findByPostId(UUID.fromString(postId)).orElseThrow(() -> new ResourceNotFoundException("Post", "post id", postId));
+        return post;
     }
 }

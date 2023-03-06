@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component("handleUserAccess")
 public class HandleUserAccess {
 
@@ -17,8 +19,8 @@ public class HandleUserAccess {
         this.userRepo = userRepo;
     }
 
-    public boolean handle(int userId, Authentication authentication) {
-        User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
+    public boolean handle(String userId, Authentication authentication) {
+        User user = userRepo.findById(UUID.fromString(userId)).orElseThrow(() -> new ResourceNotFoundException("User", "userId", userId));
         return user.getEmail().equals(authentication.getName());
     }
 }

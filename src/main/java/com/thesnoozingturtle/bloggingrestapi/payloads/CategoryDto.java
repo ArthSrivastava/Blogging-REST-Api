@@ -6,12 +6,13 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.util.UUID;
 
 @NoArgsConstructor
 @Getter
 @Setter
 public class CategoryDto {
-    private int categoryId;
+    private UUID categoryId;
 
     @NotBlank
     @Size(min = 4, message = "Title must be at least 4 characters long!")

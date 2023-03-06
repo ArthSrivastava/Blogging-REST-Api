@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -27,13 +28,13 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable int userId) {
+    public ResponseEntity<UserDto> getUserById(@PathVariable String userId) {
         return ResponseEntity.ok(this.userService.getUserById(userId));
     }
 
     //PUT: Update a user
     @PutMapping("/{userId}")
-    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto, @PathVariable int userId) {
+    public ResponseEntity<UserDto> updateUser(@Valid @RequestBody UserDto userDto, @PathVariable String userId) {
         UserDto userDto1 = this.userService.updateUser(userDto, userId);
         return ResponseEntity.ok(userDto1);
     }
@@ -41,7 +42,7 @@ public class UserController {
     //DELETE: Delete a user
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{userId}")
-    public ResponseEntity<ApiResponse> deleteUser(@PathVariable int userId) {
+    public ResponseEntity<ApiResponse> deleteUser(@PathVariable String userId) {
         this.userService.deleteUser(userId);
         return new ResponseEntity<>(new ApiResponse("User deleted successfully!", true), HttpStatus.OK);
     }

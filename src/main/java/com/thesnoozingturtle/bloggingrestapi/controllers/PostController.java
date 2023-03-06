@@ -38,7 +38,7 @@ public class PostController {
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
     public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto,
-                                              @PathVariable int userId, @PathVariable int categoryId,
+                                              @PathVariable String userId, @PathVariable String categoryId,
                                               @RequestHeader("Authorization") String token) {
         PostDto post = postService.createPost(postDto, userId, categoryId, token);
         return new ResponseEntity<>(post, HttpStatus.CREATED);
@@ -46,7 +46,7 @@ public class PostController {
 
     //get post by category
     @GetMapping("/category/{categoryId}/posts")
-    public ResponseEntity<PostResponse> getPostByCategory(@PathVariable int categoryId,
+    public ResponseEntity<PostResponse> getPostByCategory(@PathVariable String categoryId,
                                                           @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
                                                           @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize) {
         PostResponse postResponse = this.postService.getPostsByCategory(categoryId, pageNumber, pageSize);
@@ -56,7 +56,7 @@ public class PostController {
     //get post by user
     @GetMapping("/user/{userId}/posts")
     @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
-    public ResponseEntity<PostResponse> getPostByUser(@PathVariable int userId,
+    public ResponseEntity<PostResponse> getPostByUser(@PathVariable String userId,
                                                       @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) int pageNumber,
                                                       @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) int pageSize) {
         PostResponse postResponse = this.postService.getPostsByUser(userId, pageNumber, pageSize);
@@ -75,7 +75,7 @@ public class PostController {
 
     //get single post by id
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<PostDto> getPostById(@PathVariable int postId) {
+    public ResponseEntity<PostDto> getPostById(@PathVariable String postId) {
         PostDto postDto = this.postService.getPostById(postId);
         return new ResponseEntity<>(postDto, HttpStatus.OK);
     }
@@ -83,8 +83,8 @@ public class PostController {
     //delete post
     @DeleteMapping("/user/{userId}/posts/{postId}")
     @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
-    public ResponseEntity<ApiResponse> deletePost(@PathVariable int postId,
-                                                  @PathVariable int userId) {
+    public ResponseEntity<ApiResponse> deletePost(@PathVariable String postId,
+                                                  @PathVariable String userId) {
         this.postService.deletePost(postId, userId);
         return new ResponseEntity<>(new ApiResponse("Post deleted successfully!", true), HttpStatus.OK);
     }
@@ -92,7 +92,7 @@ public class PostController {
     //update post
     @PutMapping("/user/{userId}/posts/{postId}")
     @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable int postId, @PathVariable int userId) {
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable String postId, @PathVariable String userId) {
         PostDto updatedPost = this.postService.updatePost(postDto, postId, userId);
         return new ResponseEntity<>(updatedPost, HttpStatus.OK);
     }
@@ -109,7 +109,7 @@ public class PostController {
     @PostMapping("/user/{userId}/posts/image/upload/{postId}")
     @PreAuthorize(value = "@handleUserAccess.handle(#userId, authentication)")
     public ResponseEntity<PostDto> uploadPostImage(@RequestParam("image") MultipartFile image,
-                                                   @PathVariable int postId, @PathVariable int userId) throws IOException {
+                                                   @PathVariable String postId, @PathVariable String userId) throws IOException {
         PostDto postDto = this.postService.getPostById(postId);
         String uploadImageName = this.fileService.uploadImage(path, image);
         postDto.setImageName(uploadImageName);
